@@ -31,7 +31,7 @@ export default function Home ({ post, blockMap, emailHash }) {
   const { title, description } = useConfig()
 
   return (
-    <Container layout="blog" title={title} description={description}>
+    <Container layout="blog" title={title} description={description} showHeader={false}>
       <Post
         post={post}
         blockMap={blockMap}

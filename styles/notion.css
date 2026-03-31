@@ -387,9 +387,67 @@ pre[class*='language-'] {
   }
 }
 
-/* Limit body text width for readability */
-[data-post-slug='home'] .notion-page > .notion-text {
-  max-width: 680px;
+/* Let hero content span the same full width as the unit grid */
+[data-post-slug='home'] .notion-page > .notion-text,
+[data-post-slug='home'] .notion-page > .notion-h1,
+[data-post-slug='home'] .notion-page > .notion-quote,
+[data-post-slug='home'] .notion-page > .notion-asset-wrapper-image,
+[data-post-slug='home'] .notion-page > .notion-asset-wrapper {
+  max-width: none;
+  width: 100%;
+}
+
+[data-post-slug='home'] .notion-page > .notion-asset-wrapper-image,
+[data-post-slug='home'] .notion-page > .notion-asset-wrapper {
+  width: 100%;
+}
+
+[data-post-slug='home'] .notion-page > .notion-asset-wrapper-image img,
+[data-post-slug='home'] .notion-page > .notion-asset-wrapper img {
+  width: 100%;
+  height: auto;
+}
+
+/* Keep unit links aligned to a common baseline in home columns */
+[data-post-slug='home'] .notion-column-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-items: stretch;
+}
+
+[data-post-slug='home'] .notion-column-list > .notion-column {
+  width: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+[data-post-slug='home'] .notion-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  [data-post-slug='home'] .notion-column-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-post-slug='home'] .notion-column-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+}
+
+[data-post-slug='home'] .notion-column > .notion-text:has(a) {
+  margin-top: 0.75rem;
+}
+
+[data-post-slug='home'] .notion-column > .notion-text:not(:has(a)) + .notion-text:has(a) {
+  margin-top: auto;
 }
 
 /* --- Home page speakers grid --- */
@@ -491,29 +549,6 @@ pre[class*='language-'] {
   padding-top: 0.75rem;
   font-size: 0.95rem;
   line-height: 1.7;
-}
-
-/* --- Home page CTA link --- */
-
-[data-post-slug='home'] .notion-text a[href*="dover"],
-[data-post-slug='home'] .notion-text a[href*="apply"] {
-  display: inline-block;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 0.75rem 3rem;
-  text-decoration: none;
-  font-family: 'Lekton', monospace;
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: 0.05em;
-  transition: all 0.2s;
-  margin-top: 1rem;
-}
-
-[data-post-slug='home'] .notion-text a[href*="dover"]:hover,
-[data-post-slug='home'] .notion-text a[href*="apply"]:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.6);
-  opacity: 1;
 }
 
 /* =========================================
