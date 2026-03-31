@@ -27,6 +27,21 @@ export default function Post (props) {
   const notionRootRef = useRef(null)
   const isPage = post.type?.[0] === 'Page'
 
+  const normalizeExternalUrl = (value = '') => {
+    const raw = value.trim()
+    if (!raw) return ''
+    if (/^https?:\/\//i.test(raw)) return raw
+    if (raw.startsWith('//')) return `https:${raw}`
+    return `https://${raw}`
+  }
+
+  const getInitials = (name = '') => {
+    const words = name.trim().split(/\s+/).filter(Boolean)
+    if (!words.length) return '?'
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase()
+    return `${words[0][0]}${words[1][0]}`.toUpperCase()
+  }
+
   // About page: group residents into a grid
   useEffect(() => {
     if (post.slug !== 'about') return
@@ -132,6 +147,135 @@ export default function Post (props) {
     if (grid.children.length > 0) {
       speakersHeading.insertAdjacentElement('afterend', grid)
     }
+  }, [post.slug])
+
+  // Convert ventures table to a 5-column logo grid
+  useEffect(() => {
+    const root = notionRootRef.current
+    if (!root) return
+
+    const notionPage = root.querySelector('.notion-page')
+    if (!notionPage) return
+
+    const transformVenturesTables = () => {
+      const tables = Array.from(notionPage.querySelectorAll('.notion-table'))
+      tables.forEach(table => {
+        if (table.dataset.venturesGrid === 'true') return
+
+        const tableView = table.querySelector('.notion-table-view')
+        const headerCells = tableView
+          ? Array.from(tableView.querySelectorAll('.notion-table-header .notion-table-view-header-cell-inner'))
+          : []
+        if (!headerCells.length) return
+
+        const headers = headerCells.map(cell => cell.textContent?.trim().toLowerCase() || '')
+        const companyIndex = headers.findIndex(text => text.includes('company'))
+        const supportIndex = headers.findIndex(text => text.includes('support'))
+        const websiteIndex = headers.findIndex(text => text.includes('website'))
+        const logoIndex = headers.findIndex(text => text.includes('logo'))
+
+        // Guard: only transform the ventures-like table schema
+        if (companyIndex === -1 || websiteIndex === -1 || logoIndex === -1) return
+
+        const rows = Array.from(table.querySelectorAll('.notion-table-body .notion-table-row'))
+        if (!rows.length) return
+
+        const cards = rows.map(row => {
+          const cells = Array.from(row.querySelectorAll(':scope > .notion-table-cell'))
+          const companyCell = cells[companyIndex]
+          const websiteCell = cells[websiteIndex]
+          const supportCell = supportIndex > -1 ? cells[supportIndex] : null
+          const logoCell = cells[logoIndex]
+          if (!companyCell) return null
+
+          const companyName = companyCell.textContent?.replace(/\s+/g, ' ').trim() || ''
+          if (!companyName) return null
+
+          const linkFromAnchor = websiteCell?.querySelector('a[href]')?.getAttribute('href') || ''
+          const linkFromText = websiteCell?.textContent?.replace(/\s+/g, ' ').trim() || ''
+          const website = normalizeExternalUrl(linkFromAnchor || linkFromText)
+          const logoImage = logoCell?.querySelector('img')
+          const logoFileLink = logoCell?.querySelector('a.notion-property-file[href], a[href]')
+          const logoSrc = logoImage?.getAttribute('src') ||
+            logoImage?.getAttribute('data-src') ||
+            logoFileLink?.getAttribute('href') ||
+            ''
+          const supportTags = supportCell
+            ? Array.from(supportCell.querySelectorAll('.notion-property-select-item, .notion-property-multi_select-item'))
+              .map(el => el.textContent?.trim() || '')
+              .filter(Boolean)
+            : []
+
+          return { companyName, website, logoSrc, supportTags }
+        }).filter(Boolean)
+
+        if (!cards.length) return
+
+        const grid = document.createElement('div')
+        grid.className = 'ventures-logo-grid'
+
+        cards.forEach(cardData => {
+          const card = cardData.website ? document.createElement('a') : document.createElement('div')
+          card.className = 'ventures-logo-card'
+          if (cardData.website && card instanceof HTMLAnchorElement) {
+            card.href = cardData.website
+            card.target = '_blank'
+            card.rel = 'noreferrer noopener'
+          }
+
+          const visual = document.createElement('div')
+          visual.className = 'ventures-logo-visual'
+
+          if (cardData.logoSrc) {
+            const img = document.createElement('img')
+            img.className = 'ventures-logo-image'
+            img.src = cardData.logoSrc
+            img.alt = `${cardData.companyName} logo`
+            visual.appendChild(img)
+          } else {
+            const placeholder = document.createElement('div')
+            placeholder.className = 'ventures-logo-placeholder'
+            placeholder.textContent = getInitials(cardData.companyName)
+            visual.appendChild(placeholder)
+          }
+
+          const overlay = document.createElement('div')
+          overlay.className = 'ventures-logo-overlay'
+
+          const name = document.createElement('span')
+          name.className = 'ventures-logo-name'
+          name.textContent = cardData.companyName
+
+          const tags = document.createElement('div')
+          tags.className = 'ventures-logo-tags'
+          cardData.supportTags.forEach(tagText => {
+            const tag = document.createElement('span')
+            tag.className = 'ventures-logo-tag'
+            tag.textContent = tagText
+            tags.appendChild(tag)
+          })
+
+          overlay.appendChild(name)
+          overlay.appendChild(tags)
+          card.appendChild(visual)
+          card.appendChild(overlay)
+          grid.appendChild(card)
+        })
+
+        table.style.display = 'none'
+        table.insertAdjacentElement('afterend', grid)
+        table.dataset.venturesGrid = 'true'
+      })
+    }
+
+    transformVenturesTables()
+
+    const observer = new MutationObserver(() => {
+      transformVenturesTables()
+    })
+    observer.observe(notionPage, { childList: true, subtree: true })
+
+    return () => observer.disconnect()
   }, [post.slug])
 
   return (

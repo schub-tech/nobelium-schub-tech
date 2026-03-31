@@ -450,6 +450,111 @@ pre[class*='language-'] {
   margin-top: auto;
 }
 
+/* Ventures logo grid (generated from Notion table) */
+.ventures-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .ventures-logo-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ventures-logo-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+.ventures-logo-card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  aspect-ratio: 1 / 1;
+}
+
+a.ventures-logo-card {
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+a.ventures-logo-card:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.ventures-logo-visual {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ventures-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ventures-logo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Lekton', monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ventures-logo-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.7rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.88) 80%);
+}
+
+.ventures-logo-name {
+  font-family: 'Lekton', monospace;
+  font-size: 0.9rem;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.ventures-logo-tags {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.ventures-logo-tag {
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  border-radius: 2px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.14);
+  white-space: nowrap;
+}
+
 /* --- Home page speakers grid --- */
 
 [data-post-slug='home'] .home-speakers-grid {
