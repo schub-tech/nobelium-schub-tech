@@ -262,6 +262,26 @@ export default function Post (props) {
           grid.appendChild(card)
         })
 
+        const collection = table.closest('.notion-collection')
+        const isVenturesTitle = (element) => {
+          return ((element?.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase() === 'schub ventures')
+        }
+
+        const collectionHeader = collection?.querySelector('.notion-collection-header')
+        if (collectionHeader && isVenturesTitle(collectionHeader)) {
+          collectionHeader.remove()
+        }
+
+        const titleBeforeCollection = collection?.previousElementSibling
+        if (titleBeforeCollection && isVenturesTitle(titleBeforeCollection)) {
+          titleBeforeCollection.remove()
+        }
+
+        const titleBeforeTable = table.previousElementSibling
+        if (titleBeforeTable && isVenturesTitle(titleBeforeTable)) {
+          titleBeforeTable.remove()
+        }
+
         table.style.display = 'none'
         table.insertAdjacentElement('afterend', grid)
         table.dataset.venturesGrid = 'true'

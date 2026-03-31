@@ -67,6 +67,14 @@
   color: inherit;
 }
 
+/* Disable heading anchor links/icons on hover */
+.notion .notion-h1 .notion-hash-link,
+.notion .notion-h2 .notion-hash-link,
+.notion .notion-h3 .notion-hash-link {
+  display: none !important;
+  pointer-events: none !important;
+}
+
 svg.notion-page-icon {
   @apply hidden;
 }
@@ -455,7 +463,7 @@ pre[class*='language-'] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 @media (min-width: 768px) {
